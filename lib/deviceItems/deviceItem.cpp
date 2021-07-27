@@ -166,12 +166,10 @@ void DeviceItem::buildListObjects(std::vector<DeviceItem> listItems[], String js
   Serial.printf("\nJson: ");
   Serial.printf(json[key][0]["name"]);
   Serial.println("\nlistDevices: ");
-  // becareful: the condition of for loop may be incorrect! 
-  for (int i = 0; i < 4; i++){
+  for (int i = 0; i < json["length"].as<int>(); i++){
     bool _days[7];
     for (int j = 0; j<7; j++)
     _days[j] = json[key][i]["days"][j].as<bool>();
-    // TODO
     listItems->push_back(DeviceItem(
       json[key][i]["name"].as<String>(),
       json[key][i]["id"].as<int>(),
@@ -188,6 +186,32 @@ void DeviceItem::buildListObjects(std::vector<DeviceItem> listItems[], String js
     ));
     Serial.println(listItems->at(i).name());
   }
+  Serial.println("\nComplete build list devices");
+}
+
+String DeviceItem::buildJson(std::vector<DeviceItem> listItems[], String key = ""){
+  Serial.printf("\nlist Size: ");
+  Serial.println(String(listItems->size()));
+  DynamicJsonDocument doc(2048);
+  for (int i = 0; i < listItems->size(); i++){
+    doc[key][i]["name"] = listItems->at(i).name();
+    doc[key][i]["id"] = listItems->at(i).id();
+    doc[key][i]["pinName"] = listItems->at(i).pinName();
+    doc[key][i]["status"] = ((listItems->at(i).status() == Status::ON) || (listItems->at(i).status() == Status::OPEN))? 1 : 0;
+    doc[key][i]["timer"] = listItems->at(i).timer();
+    doc[key][i]["timerOnState"] = listItems->at(i).timerOnState();
+    doc[key][i]["timerOffState"] = listItems->at(i).timerOffState();
+    doc[key][i]["typeState"] = (listItems->at(i).typeState() == TypeStatus::OnOff)?0:1;
+    doc[key][i]["timerOn"] = listItems->at(i).timerOn();
+    doc[key][i]["timerOff"] = listItems->at(i).timerOff();
+    doc[key][i]["repeat"] = (listItems->at(i).repeat() == Repeat::Everyday) ? 0 : (listItems->at(i).repeat() == Repeat::Once ? 1 :2);
+    for (int j = 0; j <7; j++)
+      doc[key][i]["days"][j] = listItems->at(i).day(j);
+  }
+  String jsonString;
+  serializeJson(doc, jsonString);
+  Serial.println("\nJson String: \n" + jsonString);
+  return jsonString;
 }
 
 // String name, int id, int pinName, Status status, bool timer, bool timerOnState, bool timerOffState, TypeStatus typeState,

@@ -26,6 +26,7 @@ void setup() {
   Serial.println(dataRcv);
   DeviceItem::buildListObjects(&listDevices, dataRcv, key);
 
+  String jsonStr = DeviceItem::buildJson(&listDevices, key);
 //   WiFi.disconnect();
 //   WiFi.mode(WIFI_AP);
 //   WiFi.softAPConfig(ip, gateway, subnet);
