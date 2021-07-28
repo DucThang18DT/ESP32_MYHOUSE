@@ -161,7 +161,7 @@ int DeviceItem::getMinuteOff(){
 }
 
 void DeviceItem::buildListObjects(std::vector<DeviceItem> listItems[], String jsonString, String key =""){
-  DynamicJsonDocument json(2048);
+  DynamicJsonDocument json(1024*100);
   deserializeJson(json, jsonString);
   Serial.printf("\nJson: ");
   Serial.printf(json[key][0]["name"]);
@@ -192,7 +192,7 @@ void DeviceItem::buildListObjects(std::vector<DeviceItem> listItems[], String js
 String DeviceItem::buildJson(std::vector<DeviceItem> listItems[], String key = ""){
   Serial.printf("\nlist Size: ");
   Serial.println(String(listItems->size()));
-  DynamicJsonDocument doc(2048);
+  DynamicJsonDocument doc(1024*listItems->size()); // size of doc equal size of listItems * 1 Mb.
   for (int i = 0; i < listItems->size(); i++){
     doc[key][i]["name"] = listItems->at(i).name();
     doc[key][i]["id"] = listItems->at(i).id();
@@ -208,6 +208,28 @@ String DeviceItem::buildJson(std::vector<DeviceItem> listItems[], String key = "
     for (int j = 0; j <7; j++)
       doc[key][i]["days"][j] = listItems->at(i).day(j);
   }
+  String jsonString;
+  serializeJson(doc, jsonString);
+  Serial.println("\nJson String: \n" + jsonString);
+  return jsonString;
+}
+
+String DeviceItem::toJson(){
+  DynamicJsonDocument doc(1024); // size of doc is * 1 Mb.
+    doc["name"] = name();
+    doc["id"] = id();
+    doc["pinName"] = pinName();
+    doc["status"] = ((status() == Status::ON) || (status() == Status::OPEN))? 1 : 0;
+    doc["timer"] = timer();
+    doc["timerOnState"] = timerOnState();
+    doc["timerOffState"] = timerOffState();
+    doc["typeState"] = (typeState() == TypeStatus::OnOff)?0:1;
+    doc["timerOn"] = timerOn();
+    doc["timerOff"] = timerOff();
+    doc["repeat"] = (repeat() == Repeat::Everyday) ? 0 : (repeat() == Repeat::Once ? 1 :2);
+    for (int j = 0; j <7; j++)
+      doc["days"][j] = day(j);
+  
   String jsonString;
   serializeJson(doc, jsonString);
   Serial.println("\nJson String: \n" + jsonString);

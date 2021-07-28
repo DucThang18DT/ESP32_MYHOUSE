@@ -27,6 +27,7 @@ void setup() {
   DeviceItem::buildListObjects(&listDevices, dataRcv, key);
 
   String jsonStr = DeviceItem::buildJson(&listDevices, key);
+  fbDatatbase.sendData("/ESPTest/setTest1", jsonStr, Mode::set);
 //   WiFi.disconnect();
 //   WiFi.mode(WIFI_AP);
 //   WiFi.softAPConfig(ip, gateway, subnet);

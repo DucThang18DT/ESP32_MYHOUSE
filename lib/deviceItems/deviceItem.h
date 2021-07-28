@@ -78,9 +78,6 @@ class DeviceItem{
     int getHourOff();
     int getMinuteOff();
 
-    
-    // TODO
-    // method fromJson and method toJson
     static void buildListObjects(std::vector<DeviceItem>* , String, String);
     static String buildJson(std::vector<DeviceItem>*, String);
     String toJson();

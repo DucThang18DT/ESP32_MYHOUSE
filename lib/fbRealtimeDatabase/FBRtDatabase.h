@@ -4,6 +4,8 @@
     #include <Arduino.h>
     #include <FirebaseESP32.h>
 
+    enum Mode{set, push, update};
+
     class FBRtDatabase
     {
     private:
@@ -24,9 +26,8 @@
         void setDataPath(String);
         void setKeyData(String);
         void connect();
-        // Todo
-        void setData();
-        void pushData();
+
+        void sendData(String, String, Mode);
         String getData(String);
     };
 
