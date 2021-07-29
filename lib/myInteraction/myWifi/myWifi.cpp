@@ -1,9 +1,6 @@
-#include <WiFi.h>
+#include "myWifi.h"
 
-static String mySsid = "HT709";
-static String myPass = "hienthuong";
-
-static bool connectWifi(const char* ssid ="", const char* pass =""){
+bool connectWifi(const char* ssid ="", const char* pass =""){
     WiFi.disconnect();
     WiFi.begin(ssid, pass);
     unsigned long referenceTime = millis();

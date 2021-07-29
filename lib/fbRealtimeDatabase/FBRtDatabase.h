@@ -14,18 +14,24 @@
         String _dataPath;
         String _keyData;
         FirebaseData _firebaseData;
+        
     public:
         FBRtDatabase(){}
         FBRtDatabase(const FBRtDatabase&){}
         FBRtDatabase(String, String, String, String);
         ~FBRtDatabase(){}
 
+        // setting
         void setFirebaseInfor(String, String);
         void setHost(String);
         void setAuth(String);
         void setDataPath(String);
         void setKeyData(String);
         void connect();
+
+        // getting
+        String dataPath(){return _dataPath;}
+        String keyData(){return _keyData;}
 
         void sendData(String, String, Mode);
         String getData(String);

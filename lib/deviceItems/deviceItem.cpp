@@ -161,6 +161,7 @@ int DeviceItem::getMinuteOff(){
 }
 
 void DeviceItem::buildListObjects(std::vector<DeviceItem> listItems[], String jsonString, String key =""){
+  while (listItems->size() > 0) listItems->pop_back();
   DynamicJsonDocument json(1024*100);
   deserializeJson(json, jsonString);
   Serial.printf("\nJson: ");
