@@ -1,10 +1,12 @@
 #include "FBRtInteraction.h"
 
-void buildListDevices(){
+void buildListDevices(std::vector<DeviceItem>* list){
   String dataRcv = fbDatatbase.getData(PATH);
   Serial.printf("\nData Received: \n");
   Serial.println(dataRcv);
-  DeviceItem::buildListObjects(&listDevices, dataRcv, KEY);
+  DeviceItem::buildListObjects(list, dataRcv, KEY);
+  // Serial.printf("\nName [0]: %s", listDevices.at(0).name());
+  Serial.printf("\nsize of listDevice = %d\n", list->size());
 }
 
 void splitString(std::vector<String> listKeys,String str = "", char symbol = '/'){
@@ -25,12 +27,18 @@ void streamCallback(StreamData data){
                 data.eventType().c_str());
     Serial.println();
     String path = data.dataPath();
-    if (path == "/length") buildListDevices();
-    // else {
-    //   std::vector<String> listKeys;
-    //   splitString(listKeys, path, '/');
-    //   int positionOfDevice = listKeys.at(1).toInt();
-    // }
+    if (path == "/length") buildListDevices(&listDevices);
+    else {
+      std::vector<String> listKeys;
+      splitString(listKeys, path, '/');
+      int positionOfDevice = listKeys.at(1).toInt();
+
+      String dataRcv = fbDatatbase.getData(PATH + "/" + listKeys.at(0) + "/" + listKeys.at(1));
+      Serial.printf("\nData Received: \n");
+      Serial.println(dataRcv);
+      DeviceItem::updateObject(&listDevices, positionOfDevice, dataRcv);
+      // TODO
+    }
 }
 
 void streamTimeOutCallback(bool timeOut){

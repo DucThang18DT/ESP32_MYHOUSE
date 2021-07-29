@@ -14,7 +14,7 @@ static FirebaseData fbStreamData;
 static std::vector<DeviceItem> listDevices;
 
 
-void buildListDevices();
+void buildListDevices(std::vector<DeviceItem>*);
 void splitString(std::vector<String>, String, char);
 void streamCallback(StreamData);
 void streamTimeOutCallback(bool);

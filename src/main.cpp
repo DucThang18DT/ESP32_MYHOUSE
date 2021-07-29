@@ -5,19 +5,27 @@
 #include <myInteraction/myWifi/myWifi.h>
 #include <myInteraction/fbInter/FBRtInteraction.h>
 
+unsigned long referenceTime;
 void setup() {
   Serial.begin(115200);
   connectWifi(mySsid.c_str(), myPass.c_str());
   fbDatatbase.connect();
   
-  buildListDevices();
-
+  buildListDevices(&listDevices);
+  delay(1000);
+  Serial.printf("\nsize of listDevice: %d\n", listDevices.size());
   String jsonStr = DeviceItem::buildJson(&listDevices, KEY);
   fbDatatbase.sendData("/ESPTest/setTest1", jsonStr, Mode::set);
 
-  fbRtStream(PATH);
+  // fbRtStream(PATH);
+  referenceTime = millis();
 }
 
 void loop() {
-  
+  // if (abs(millis() - referenceTime >= 3000)){
+  //   Serial.println("\nList Devices: ");
+  //   for (int i = 0; i< listDevices.size(); i++){
+  //     Serial.println(listDevices.at(i).name());
+  //   }
+  // }
 }

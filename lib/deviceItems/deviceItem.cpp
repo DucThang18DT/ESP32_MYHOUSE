@@ -190,9 +190,37 @@ void DeviceItem::buildListObjects(std::vector<DeviceItem> listItems[], String js
   Serial.println("\nComplete build list devices");
 }
 
+void DeviceItem::updateObject(std::vector<DeviceItem> listItems[],int index, String jsonString){
+  DynamicJsonDocument json(1024);
+  deserializeJson(json, jsonString);
+  Serial.printf("\nJson: ");
+  Serial.printf(json["name"]);
+  Serial.println("\nlistDevices: ");
+
+  bool _days[7];
+  for (int j = 0; j<7; j++)
+  _days[j] = json["days"][j].as<bool>();
+  listItems->at(index) = DeviceItem(
+    json["name"].as<String>(),
+    json["id"].as<int>(),
+    json["pinName"].as<int>(),
+    (json["status"].as<int>() == 1)? Status::ON:Status::OFF,
+    json["timer"].as<bool>(),
+    json["timerOnState"].as<bool>(),
+    json["timerOffState"].as<bool>(),
+    (json["typeState"].as<int>() == 1)? TypeStatus::OnOff:TypeStatus::OpenClose,
+    json["timerOn"].as<int>(),
+    json["timerOff"].as<int>(),
+    (json["repeat"].as<int>() == 0) ? Repeat::Once :(json["repeat"].as<int>() == 1 ? Repeat::Everyday:Repeat::Option),
+    _days
+  );
+  Serial.println(listItems->at(index).name());
+  Serial.println("\nComplete update object");
+}
+
 String DeviceItem::buildJson(std::vector<DeviceItem> listItems[], String key = ""){
   Serial.printf("\nlist Size: ");
-  Serial.println(String(listItems->size()));
+  Serial.println(listItems->size());
   DynamicJsonDocument doc(1024*listItems->size()); // size of doc equal size of listItems * 1 Mb.
   for (int i = 0; i < listItems->size(); i++){
     doc[key][i]["name"] = listItems->at(i).name();
