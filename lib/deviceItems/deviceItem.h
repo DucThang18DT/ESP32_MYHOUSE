@@ -78,7 +78,7 @@ class DeviceItem{
     int getHourOff();
     int getMinuteOff();
 
-    static void buildListObjects(std::vector<DeviceItem>* , String, String);
+    // static void buildListObjects(std::vector<DeviceItem>* , String, String);
     static void updateObject(std::vector<DeviceItem>*, int, String);
     static String buildJson(std::vector<DeviceItem>*, String);
     String toJson();

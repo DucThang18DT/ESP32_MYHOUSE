@@ -160,62 +160,67 @@ int DeviceItem::getMinuteOff(){
       return -1;
 }
 
-void DeviceItem::buildListObjects(std::vector<DeviceItem> listItems[], String jsonString, String key =""){
-  Serial.printf("\n(DeviceItem::Build list object) size of listDevice = %d\n", listItems->size());
-  while (listItems->size() > 0) listItems->pop_back();
-  listItems->resize(0);
-  Serial.printf("\n(DeviceItem::Build list object) size of listDevice after = %d\n", listItems->size());
-  Serial.printf("\n(DeviceItem::Build list object) capacity of listDevice after = %d\n", listItems->capacity());
-  Serial.printf("\n(DeviceItem::Build list object) key = %s\n", key.c_str());
-  DynamicJsonDocument json(1024*100);
-  // problem
-  /*
-  Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.
-Core 1 register dump:
-PC      : 0x400eb8b6  PS      : 0x00060330  A0      : 0x800f28fd  A1      : 0x3fff5600  
-A2      : 0x00000000  A3      : 0x3fff57f4  A4      : 0x00000000  A5      : 0x00000000
-A6      : 0x3fff59e0  A7      : 0x00000008  A8      : 0x3fff5910  A9      : 0x3fff55f0  
-A10     : 0x3fff5610  A11     : 0x3ff9c510  A12     : 0x000000ff  A13     : 0x0000ff00  
-A14     : 0x00ff0000  A15     : 0xff000000  SAR     : 0x00000010  EXCCAUSE: 0x0000001c
-EXCVADDR: 0x00000000  LBEG    : 0x400014fd  LEND    : 0x4000150d  LCOUNT  : 0xffffffff  
+// void DeviceItem::buildListObjects(std::vector<DeviceItem> listItems[], String jsonString, String key =""){
+//   Serial.printf("\n(DeviceItem::Build list object) size of listDevice = %d\n", listItems->size());
+//   while (listItems->size() > 0) listItems->pop_back();
+//   listItems->resize(0);
+//   Serial.printf("\n(DeviceItem::Build list object) size of listDevice after = %d\n", listItems->size());
+//   Serial.printf("\n(DeviceItem::Build list object) capacity of listDevice after = %d\n", listItems->capacity());
+//   Serial.printf("\n(DeviceItem::Build list object) key = %s\n", key.c_str());
+//   DynamicJsonDocument json(1024*100);
+//   // problem
+//   /*
+//   Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.
+// Core 1 register dump:
+// PC      : 0x400eb8b6  PS      : 0x00060330  A0      : 0x800f28fd  A1      : 0x3fff5600  
+// A2      : 0x00000000  A3      : 0x3fff57f4  A4      : 0x00000000  A5      : 0x00000000
+// A6      : 0x3fff59e0  A7      : 0x00000008  A8      : 0x3fff5910  A9      : 0x3fff55f0  
+// A10     : 0x3fff5610  A11     : 0x3ff9c510  A12     : 0x000000ff  A13     : 0x0000ff00  
+// A14     : 0x00ff0000  A15     : 0xff000000  SAR     : 0x00000010  EXCCAUSE: 0x0000001c
+// EXCVADDR: 0x00000000  LBEG    : 0x400014fd  LEND    : 0x4000150d  LCOUNT  : 0xffffffff  
 
-ELF file SHA256: 0000000000000000
+// ELF file SHA256: 0000000000000000
 
-Backtrace: 0x400eb8b6:0x3fff5600 0x400f28fa:0x3fff5910 0x400f2932:0x3fff59a0 0x400e6e72:0x3fff59e0 0x400e339e:0x3fff5a80 0x400e6531:0x3fff62f0 0x400d1d39:0x3fff6340 0x400d78c5:0x3fff63c0 0x400da9dd:0x3fff64b0 0x400db047:0x3fff6770 0x400db2f5:0x3fff6790 0x400db34d:0x3fff6830 0x400db414:0x3fff6850 0x40089ab2:0x3fff6870
-  */
-  json.clear();
-  deserializeJson(json, jsonString);
-  Serial.printf("\nJson: ");
-  Serial.printf(json[key][0]["name"]);
-  Serial.println("\nlistDevices: ");
-  for (int i = 0; i < json["length"].as<int>(); i++){
-    bool _days[7];
-    for (int j = 0; j<7; j++)
-    _days[j] = json[key][i]["days"][j].as<bool>();
-    listItems->push_back(DeviceItem(
-      json[key][i]["name"].as<String>(),
-      json[key][i]["id"].as<int>(),
-      json[key][i]["pinName"].as<int>(),
-      (json[key][i]["status"].as<int>() == 1)? Status::ON:Status::OFF,
-      json[key][i]["timer"].as<bool>(),
-      json[key][i]["timerOnState"].as<bool>(),
-      json[key][i]["timerOffState"].as<bool>(),
-      (json[key][i]["typeState"].as<int>() == 1)? TypeStatus::OnOff:TypeStatus::OpenClose,
-      json[key][i]["timerOn"].as<int>(),
-      json[key][i]["timerOff"].as<int>(),
-      (json[key][i]["repeat"].as<int>() == 0) ? Repeat::Once :(json[key][i]["repeat"].as<int>() == 1 ? Repeat::Everyday:Repeat::Option),
-      _days
-    ));
-    Serial.println(listItems->at(i).name());
-  }
-  Serial.printf("\n(DeviceItem::build list object) json size: %d", json.size());
-  json.remove(key);
-  json.remove("users");
-  json.remove("length");
-  json.clear();
-  Serial.printf("\n(DeviceItem::build list object) json size affter: %d", json.size());
-  Serial.println("\n(DeviceItem::Build list object) Complete build list devices");
-}
+// Backtrace: 0x400eb8b6:0x3fff5600 0x400f28fa:0x3fff5910 0x400f2932:0x3fff59a0 0x400e6e72:0x3fff59e0 0x400e339e:0x3fff5a80 0x400e6531:0x3fff62f0 0x400d1d39:0x3fff6340 0x400d78c5:0x3fff63c0 0x400da9dd:0x3fff64b0 0x400db047:0x3fff6770 0x400db2f5:0x3fff6790 0x400db34d:0x3fff6830 0x400db414:0x3fff6850 0x40089ab2:0x3fff6870
+//   */
+//   // json->clear();
+//   deserializeJson(json, jsonString);
+//   json.shrinkToFit();
+//   Serial.printf("\n(DeviceItem::build list object) json size: %d", json.size());
+//   Serial.printf("\nJson: ");
+//   // Serial.printf(json[key][0]["name"]);
+//   // Serial.println("\nlistDevices: ");
+//   // for (int i = 0; i < *json["length"]->as<int>(); i++){
+//   //   bool _days[7];
+//   //   for (int j = 0; j<7; j++)
+//   //   {_days[j] = json[key][i]["days"][j].as<bool>();
+//   //   Serial.printf("\n(DeviceItem::buildlistObject) _days[%d] : ",j);
+//   //   Serial.println(_days[j]);}
+//   //   listItems->push_back(DeviceItem(
+//   //     json[key][i]["name"].as<String>(),
+//   //     json[key][i]["id"].as<int>(),
+//   //     json[key][i]["pinName"].as<int>(),
+//   //     (json[key][i]["status"].as<int>() == 1)? Status::ON:Status::OFF,
+//   //     json[key][i]["timer"].as<bool>(),
+//   //     json[key][i]["timerOnState"].as<bool>(),
+//   //     json[key][i]["timerOffState"].as<bool>(),
+//   //     (json[key][i]["typeState"].as<int>() == 1)? TypeStatus::OnOff:TypeStatus::OpenClose,
+//   //     json[key][i]["timerOn"].as<int>(),
+//   //     json[key][i]["timerOff"].as<int>(),
+//   //     (json[key][i]["repeat"].as<int>() == 0) ? Repeat::Once :(json[key][i]["repeat"].as<int>() == 1 ? Repeat::Everyday:Repeat::Option),
+//   //     _days
+//   //   ));
+//   //   Serial.println(listItems->at(i).name());
+//   // }
+//   Serial.printf("\n(DeviceItem::build list object) json size: %d", json.size());
+//   Serial.printf("\n(DeviceItem::build list object) list size: %d", listItems->size());
+//   // json.remove(key);
+//   // json.remove("users");
+//   // json.remove("length");
+//   // json.clear();
+//   Serial.printf("\n(DeviceItem::build list object) json size affter: %d", json.size());
+//   Serial.println("\n(DeviceItem::Build list object) Complete build list devices");
+// }
 
 void DeviceItem::updateObject(std::vector<DeviceItem> listItems[], int index, String jsonString){
   Serial.printf("((DeviceItem::update Object) list size: %d", (listItems)->size());
