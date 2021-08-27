@@ -35,6 +35,7 @@
 
         void sendData(String, String, Mode);
         String getData(String);
+        int getInt(String);
     };
 
 #endif

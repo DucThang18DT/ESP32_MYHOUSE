@@ -1,57 +1,65 @@
 #include "FBRtInteraction.h"
 
 void buildListObjects(std::vector<DeviceItem> listItems[], String jsonString, String key =""){
-  Serial.printf("\n(DeviceItem::Build list object) size of listDevice = %d\n", listItems->size());
-  while (listItems->size() > 0) listItems->pop_back();
-  listItems->resize(0);
-  Serial.printf("\n(DeviceItem::Build list object) size of listDevice after = %d\n", listItems->size());
-  Serial.printf("\n(DeviceItem::Build list object) capacity of listDevice after = %d\n", listItems->capacity());
-  Serial.printf("\n(DeviceItem::Build list object) key = %s\n", key.c_str());
-  DynamicJsonDocument json(1024*100);
-  // json->clear();
+  DynamicJsonDocument json(1024);
   deserializeJson(json, jsonString);
   json.shrinkToFit();
   Serial.printf("\n(DeviceItem::build list object) json size: %d", json.size());
   Serial.printf("\nJson: ");
-  Serial.printf(json[key][0]["name"]);
-  Serial.println("\nlistDevices: ");
-  for (int i = 0; i < json["length"].as<int>(); i++){
-    bool _days[7];
-    for (int j = 0; j<7; j++)
-    {_days[j] = json[key][i]["days"][j].as<bool>();
+  Serial.printf(json["name"]);
+  Serial.println("\nDevices: ");
+  
+  bool _days[7];
+  for (int j = 0; j<7; j++){
+    _days[j] = json["days"][j].as<bool>();
     Serial.printf("\n(DeviceItem::buildlistObject) _days[%d] : ",j);
     Serial.println(_days[j]);}
-    listItems->push_back(DeviceItem(
-      json[key][i]["name"].as<String>(),
-      json[key][i]["id"].as<int>(),
-      json[key][i]["pinName"].as<int>(),
-      (json[key][i]["status"].as<int>() == 1)? Status::ON:Status::OFF,
-      json[key][i]["timer"].as<bool>(),
-      json[key][i]["timerOnState"].as<bool>(),
-      json[key][i]["timerOffState"].as<bool>(),
-      (json[key][i]["typeState"].as<int>() == 1)? TypeStatus::OnOff:TypeStatus::OpenClose,
-      json[key][i]["timerOn"].as<int>(),
-      json[key][i]["timerOff"].as<int>(),
-      (json[key][i]["repeat"].as<int>() == 0) ? Repeat::Once :(json[key][i]["repeat"].as<int>() == 1 ? Repeat::Everyday:Repeat::Option),
-      _days
-    ));
-    Serial.println(listItems->at(i).name());
-  }
+
+  listItems->push_back(DeviceItem(
+    json["name"].as<String>(),
+    json["id"].as<int>(),
+    json["pinName"].as<int>(),
+    (json["status"].as<int>() == 1)? Status::ON:Status::OFF,
+    json["timer"].as<bool>(),
+    json["timerOnState"].as<bool>(),
+    json["timerOffState"].as<bool>(),
+    (json["typeState"].as<int>() == 1)? TypeStatus::OnOff:TypeStatus::OpenClose,
+    json["timerOn"].as<int>(),
+    json["timerOff"].as<int>(),
+    (json["repeat"].as<int>() == 0) ? Repeat::Once :(json["repeat"].as<int>() == 1 ? Repeat::Everyday:Repeat::Option),
+    _days
+  ));
+
   Serial.printf("\n(DeviceItem::build list object) json size: %d", json.size());
   Serial.printf("\n(DeviceItem::build list object) list size: %d", listItems->size());
-  json.remove(key);
-  json.remove("users");
-  json.remove("length");
+  // json.remove(key);
+  // json.remove("users");
+  // json.remove("length");
   json.clear();
   Serial.printf("\n(DeviceItem::build list object) json size affter: %d", json.size());
   Serial.println("\n(DeviceItem::Build list object) Complete build list devices");
 }
 
 void buildListDevices(std::vector<DeviceItem>* list){
-  String dataRcv = fbDatatbase.getData(PATH);
-  Serial.printf("\n(build list devices) Data Received: \n");
-  Serial.println(dataRcv);
-  buildListObjects(&(*list), dataRcv, KEY);
+  Serial.printf("\n(Build list devices) size of listDevice = %d\n", list->size());
+  while (list->size() > 0) list->pop_back();
+  list->resize(0);
+
+  Serial.printf("\n(Build list devices) size of listDevice after = %d\n", list->size());
+  Serial.printf("\n(Build list devices) capacity of listDevice after = %d\n", list->capacity());
+
+  // String len = fbDatatbase.getData(PATH + "/length");
+  // Serial.println("\n(build list devices) Length of list <String> = " + len);
+  int length = fbDatatbase.getInt(PATH + "/length");
+  Serial.printf("\n(build list devices) length of list: \n");
+  Serial.println(length);
+  for (int i = 0; i < length; i++){
+    String dataRcv = fbDatatbase.getData(PATH + "/" + KEY + "/" + String(i));
+    Serial.printf("\n(build list devices) data of device %d: \n", i);
+    Serial.println(dataRcv);
+    buildListObjects(&(*list), dataRcv);
+  }
+  
   // Serial.printf("\nName [0]: %s", listDevices.at(0).name());
   Serial.printf("\n(build list devices) size of listDevice = %d\n", list->size());
 }

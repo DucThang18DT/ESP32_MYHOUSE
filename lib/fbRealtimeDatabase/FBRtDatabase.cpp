@@ -39,6 +39,12 @@ String FBRtDatabase::getData(String path = "/"){
     return _firebaseData.jsonString();
 }
 
+int FBRtDatabase::getInt(String path = "/"){
+    Firebase.getInt(_firebaseData, path);
+    Serial.println("\ngetInt: " + _firebaseData.intData());
+    return _firebaseData.intData();
+}
+
 void FBRtDatabase::sendData(String path = "/", String jsonString = "", Mode mode = Mode::set){
     FirebaseJson _fbJson;
     _fbJson.setJsonData(jsonString);
