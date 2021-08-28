@@ -160,6 +160,7 @@ int DeviceItem::getMinuteOff(){
       return -1;
 }
 
+// Not used - use addObject instead.
 // void DeviceItem::buildListObjects(std::vector<DeviceItem> listItems[], String jsonString, String key =""){
 //   Serial.printf("\n(DeviceItem::Build list object) size of listDevice = %d\n", listItems->size());
 //   while (listItems->size() > 0) listItems->pop_back();
@@ -222,52 +223,89 @@ int DeviceItem::getMinuteOff(){
 //   Serial.println("\n(DeviceItem::Build list object) Complete build list devices");
 // }
 
-void DeviceItem::updateObject(std::vector<DeviceItem> listItems[], int index, String jsonString){
-  Serial.printf("((DeviceItem::update Object) list size: %d", (listItems)->size());
+void DeviceItem::addObject(std::vector<DeviceItem> listItems[], String jsonString){
   DynamicJsonDocument json(1024);
   deserializeJson(json, jsonString);
-  Serial.printf("\nJson: ");
+  json.shrinkToFit();
+  // Serial.printf("\n(DeviceItem::addObject) json size: %d", json.size());
+  // Serial.printf("\n(DeviceItem::addObject) Devices: ");
+  // Serial.printf(json["name"]);
+  
+  bool _days[7];
+  for (int j = 0; j<7; j++){
+    _days[j] = json["days"][j].as<bool>();
+    // Serial.printf("\n(DeviceItem::addObject) _days[%d] : ",j);
+    // Serial.println(_days[j]);
+    }
+
+  listItems->push_back(DeviceItem(
+    json["name"].as<String>(),
+    json["id"].as<int>(),
+    json["pinName"].as<int>(),
+    (json["status"].as<int>() == 1)? Status::ON:Status::OFF,
+    json["timer"].as<bool>(),
+    json["timerOnState"].as<bool>(),
+    json["timerOffState"].as<bool>(),
+    (json["typeState"].as<int>() == 1)? TypeStatus::OnOff:TypeStatus::OpenClose,
+    json["timerOn"].as<int>(),
+    json["timerOff"].as<int>(),
+    (json["repeat"].as<int>() == 0) ? Repeat::Once :(json["repeat"].as<int>() == 1 ? Repeat::Everyday:Repeat::Option),
+    _days
+  ));
+
+  // Serial.printf("\n(DeviceItem::addObject) json size: %d", json.size());
+  // Serial.printf("\n(DeviceItem::addObject) list size: %d", listItems->size());
+  json.clear();
+  // Serial.printf("\n(DeviceItem::addObject) json size affter: %d", json.size());
+  Serial.println("\n(DeviceItem::addObject) Complete build list devices\n");
+}
+
+void DeviceItem::updateObject(std::vector<DeviceItem> listItems[], int index, String jsonString){
+  // Serial.printf("(DeviceItem::update Object) list size: %d", (listItems)->size());
+  DynamicJsonDocument json(1024);
+  deserializeJson(json, jsonString);
+  Serial.printf("\n(DeviceItem::update Object) Update device: ");
   Serial.printf(json["name"]);
-  Serial.println("\nDevice: ");
+  Serial.println("\n(DeviceItem::update Object) Device index: ");
   Serial.println(index);
 
   bool _days[7];
   for (int j = 0; j<7; j++)
   _days[j] = json["days"][j].as<bool>();
-  Serial.println("start update");
+  // Serial.println("(DeviceItem::update Object) start update");
 
   listItems->at(index).newName(json["name"].as<String>());
-  Serial.println("update OK");
+  // Serial.println("update OK");
   listItems->at(index).newId(json["id"].as<int>());
-  Serial.println("update OK");
+  // Serial.println("update OK");
   listItems->at(index).newPinName(json["pinName"].as<int>());
-  Serial.println("update OK");
+  // Serial.println("update OK");
   listItems->at(index).newState((json["status"].as<int>() == 1)? Status::ON:Status::OFF);
-  Serial.println("update OK");
+  // Serial.println("update OK");
   listItems->at(index).newTimer(json["timer"].as<bool>());
-  Serial.println("update OK");
+  // Serial.println("update OK");
   listItems->at(index).newTimerOnState(json["timerOnState"].as<bool>());
-  Serial.println("update OK");
+  // Serial.println("update OK");
   listItems->at(index).newTImerOffState(json["timerOffState"].as<bool>());
-  Serial.println("update OK");
+  // Serial.println("update OK");
   listItems->at(index).newTypeState((json["typeState"].as<int>() == 1)? TypeStatus::OnOff:TypeStatus::OpenClose);
-  Serial.println("update OK");
+  // Serial.println("update OK");
   listItems->at(index).newTimerOn(json["timerOn"].as<int>());
-  Serial.println("update OK");
+  // Serial.println("update OK");
   listItems->at(index).newTimerOff(json["timerOff"].as<int>());
-  Serial.println("update OK");
+  // Serial.println("update OK");
   listItems->at(index).newRepeat((json["repeat"].as<int>() == 0) ? Repeat::Once :(json["repeat"].as<int>() == 1 ? Repeat::Everyday:Repeat::Option));
-  Serial.println("update OK");
+  // Serial.println("update OK");
   listItems->at(index).newDays(_days);
-  Serial.println("update OK");
+  // Serial.println("update OK");
   
   Serial.println(listItems->at(index).name());
   Serial.println("\n(DeviceItem::update Object) Complete update object");
 }
 
 String DeviceItem::buildJson(std::vector<DeviceItem> listItems[], String key = ""){
-  Serial.printf("\n(build Json) list Size: ");
-  Serial.println(listItems->size());
+  // Serial.printf("\n(DeviceItem::buildJson) list Size: ");
+  // Serial.println(listItems->size());
   DynamicJsonDocument doc(1024*listItems->size()); // size of doc equal size of listItems * 1 Mb.
   for (int i = 0; i < listItems->size(); i++){
     doc[key][i]["name"] = listItems->at(i).name();
@@ -286,7 +324,7 @@ String DeviceItem::buildJson(std::vector<DeviceItem> listItems[], String key = "
   }
   String jsonString;
   serializeJson(doc, jsonString);
-  Serial.println("\n(DeviceItem::build Json) Json String: \n" + jsonString);
+  // Serial.println("\n(DeviceItem::build Json) Json String: \n" + jsonString);
   return jsonString;
 }
 
@@ -308,9 +346,64 @@ String DeviceItem::toJson(){
   
   String jsonString;
   serializeJson(doc, jsonString);
-  Serial.println("\n(DeviceItem::toJson) Json String: \n" + jsonString);
+  // Serial.println("\n(DeviceItem::toJson) Json String: \n" + jsonString);
   return jsonString;
 }
 
-// String name, int id, int pinName, Status status, bool timer, bool timerOnState, bool timerOffState, TypeStatus typeState,
-//                        int timerOn, int timerOff, Repeat repeat, bool *days
+bool DeviceItem::isTimeToOn(){
+  if (timer() && timerOnState())
+    return checkTimer(timerOn(), true);
+  return false;
+}
+
+bool DeviceItem::isTimeToOff(){
+  if (timer() && timerOffState()) 
+    return checkTimer(timerOff(), false);
+  return false;
+}
+
+// Check timerOn and timerOff
+// mode = true -> Check timerOn
+// mode = false -> Check timerOff
+bool DeviceItem::checkTimer(int time, bool mode){
+  WiFiUDP ntpUDP;
+  NTPClient timeClient(ntpUDP);
+
+  timeClient.begin();
+  timeClient.setTimeOffset(+7*60*60);
+  while(!timeClient.update()) 
+    timeClient.forceUpdate();
+
+  int timeNow = timeClient.getHours()*3600 + timeClient.getMinutes()*60 + timeClient.getSeconds();
+  // Serial.printf("\n(DeviceItem::checkTimer) Time now: %d:%d:%d\n", timeClient.getHours(), timeClient.getMinutes(), timeClient.getSeconds());
+  // Serial.printf("\n(DeviceItem::checkTimer) Time now in second: %d", timeNow);
+  switch (repeat())
+  {
+  case Repeat::Once:
+    if ((timeNow - time >= 0) && (timeNow - time <=  15)) {
+      if (mode){
+        newState(Status::ON);
+        newTimerOnState(false);}
+      else {
+        newState(Status::OFF);
+        newTImerOffState(false);
+      }
+      return true;
+      }      
+    break;
+  case Repeat::Everyday:
+    if ((timeNow - time >= 0) && (timeNow - time <=  15)) {
+      if (mode) newState(Status::ON);
+      else newState(Status::OFF);
+      return true;}
+    break;
+  case Repeat::Option:
+    if (day(timeClient.getDay()))
+      if ((timeNow - time >= 0) && (timeNow - time <=  15)) {
+        if (mode) newState(Status::ON);
+        else newState(Status::OFF);
+        return true;}
+    break;
+  }
+  return false;
+}

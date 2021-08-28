@@ -21,7 +21,7 @@
         FBRtDatabase(String, String, String, String);
         ~FBRtDatabase(){}
 
-        // setting
+        // setter
         void setFirebaseInfor(String, String);
         void setHost(String);
         void setAuth(String);
@@ -29,7 +29,7 @@
         void setKeyData(String);
         void connect();
 
-        // getting
+        // getter
         String dataPath(){return _dataPath;}
         String keyData(){return _keyData;}
 

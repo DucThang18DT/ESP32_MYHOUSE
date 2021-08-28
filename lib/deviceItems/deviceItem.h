@@ -1,8 +1,8 @@
 #ifndef _DEVICE_H_
 #define _DEVICE_H_
 
-// #include <NTPClient.h>
-// #include <WiFiUdp.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 #include <ArduinoJson.h>
 #include <vector>
 
@@ -27,10 +27,12 @@ class DeviceItem{
     int _timerOff;
     Repeat _repeat;
     bool _days[7];
+
+    bool checkTimer(int, bool);
   
   public:
 
-    // getting
+    // getter
     int pinName(){return _pinName;}
     int id(){return _id;}
     String name(){return _name;}
@@ -45,7 +47,7 @@ class DeviceItem{
     bool* days(){return _days;}
     bool day(int index){return _days[index];}
 
-    // setting
+    // setter
     void newName(String name = "NoName"){_name = name;}
     void newRepeat(Repeat repeat = Repeat::Once){_repeat = repeat;}
     void newId(int id = 0){_id = id;}
@@ -78,8 +80,13 @@ class DeviceItem{
     int getHourOff();
     int getMinuteOff();
 
+    // TODO
+    bool isTimeToOn();
+    bool isTimeToOff();
+
+
     // static void buildListObjects(std::vector<DeviceItem>* , String, String);
-    static void addObject();
+    static void addObject(std::vector<DeviceItem>*, String);
     static void updateObject(std::vector<DeviceItem>*, int, String);
     static String buildJson(std::vector<DeviceItem>*, String);
     String toJson();

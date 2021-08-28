@@ -35,13 +35,13 @@ void FBRtDatabase::connect(){
 
 String FBRtDatabase::getData(String path = "/"){
     Firebase.getJSON(_firebaseData, path);
-    Serial.println("\ngetData: " + _firebaseData.jsonString());
+    // Serial.println("\ngetData: " + _firebaseData.jsonString());
     return _firebaseData.jsonString();
 }
 
 int FBRtDatabase::getInt(String path = "/"){
     Firebase.getInt(_firebaseData, path);
-    Serial.println("\ngetInt: " + _firebaseData.intData());
+    // Serial.println("\ngetInt: " + _firebaseData.intData());
     return _firebaseData.intData();
 }
 
