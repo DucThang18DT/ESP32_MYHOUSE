@@ -4,6 +4,7 @@
 #include <FBRtDatabase.h>
 #include <fbInter/FBRtInteraction.h>
 #include <myWifi/myWifi.h>
+#include <DigitalClock.h>
 
 unsigned long referenceTime;
 unsigned long referenceTime2;
@@ -75,6 +76,9 @@ void loop() {
     for (int i = 0; i< listDevices.size(); i++){
       Serial.println(listDevices.at(i).name());
     }
+    DigitalClock myDClock;
+    myDClock.showDate();
+    delay(80);
   }
 }
 
