@@ -4,7 +4,7 @@
 #include <FBRtDatabase.h>
 #include <fbInter/FBRtInteraction.h>
 #include <myWifi/myWifi.h>
-#include <DigitalClock.h>
+#include <digitalClock/DigitalClock.h>
 
 unsigned long referenceTime;
 unsigned long referenceTime2;
@@ -24,15 +24,10 @@ void streamCallback(StreamData data){
       std::vector<String> listKeys;
       splitString(&listKeys, path, '/');
       int positionOfDevice = listKeys.at(1).toInt();
-      // Serial.printf("\n(streamCallback) position: %d", positionOfDevice);
 
       String dataRcv = fbDatatbase.getData(PATH + "/" + listKeys.at(0) + "/" + listKeys.at(1));
       
-      // Serial.printf("\n(streamcallback) Data Received: \n");
-      // Serial.println(dataRcv);
-      // Serial.printf("(streamcallback) list size: %d", listDevices.size());
       DeviceItem::updateObject(&listDevices, positionOfDevice, dataRcv);
-      // TODO
     }
 }
 
