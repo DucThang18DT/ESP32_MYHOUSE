@@ -22,7 +22,7 @@ String DigitalClock::timeNow(){
   String tNow = DateTime.toString();
   int index = 1;
   for (int i = 0; i< 6; i++){
-    String tmp = "";
+    String tmp = ""; 
     tmp += (tNow[++index] + tNow[++index]);
     _timeNow[i] = tmp.toInt();
     ++index;

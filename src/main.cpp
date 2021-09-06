@@ -5,31 +5,10 @@
 #include <fbInter/FBRtInteraction.h>
 #include <myWifi/myWifi.h>
 #include <digitalClock/DigitalClock.h>
+#include <sensors/tempAndHumSensor/TempAndHumSensor.h>
+#include <myTask/myTask.h>
 
 unsigned long referenceTime;
-unsigned long referenceTime2;
-TaskHandle_t Task2;
-void alarm(void *);
-
-void streamCallback(StreamData data){
-  Serial.printf("\nstream path: %s\nevent path: %s\ndata type: %s\nevent type: %s\n\n",
-                data.streamPath().c_str(),
-                data.dataPath().c_str(),
-                data.dataType().c_str(),
-                data.eventType().c_str());
-    Serial.println();
-    String path = data.dataPath();
-    if (path == "/length") buildListDevices(&listDevices);
-    else if (path.length()>1){
-      std::vector<String> listKeys;
-      splitString(&listKeys, path, '/');
-      int positionOfDevice = listKeys.at(1).toInt();
-
-      String dataRcv = fbDatatbase.getData(PATH + "/" + listKeys.at(0) + "/" + listKeys.at(1));
-      
-      DeviceItem::updateObject(&listDevices, positionOfDevice, dataRcv);
-    }
-}
 
 void setup() {
   Serial.begin(115200);
@@ -38,11 +17,9 @@ void setup() {
   
   buildListDevices(&listDevices);
   delay(1000);
-  // Serial.printf("\n(main) size of listDevices: %d\n", listDevices.size());
   String jsonStr = DeviceItem::buildJson(&listDevices, KEY);
   fbDatatbase.sendData("/ESPTest/setTest1", jsonStr, Mode::set);
   
-  // fbRtStream(&fbStreamData, PATH);
 
   Firebase.beginStream(fbStreamData, "/testUser1");
   Serial.println("(main) begin Stream");
@@ -75,28 +52,4 @@ void loop() {
     myDClock.showDate();
     delay(80);
   }
-}
-
-void alarm(void * parameters){
-  Serial.print("\nTask_Alarm running on core: ");
-  Serial.println(xPortGetCoreID());
-
-  for (;;){
-    if (abs(millis() - referenceTime2) >= 5000){
-      Serial.println("(Core 0) check alarm");
-      referenceTime2 = millis();
-      delay(100);
-
-      for (int i = 0; i < listDevices.size(); i++){
-        if (listDevices.at(i).isTimeToOn() || listDevices.at(i).isTimeToOff()) {
-          String json = listDevices.at(i).toJson();
-          fbDatatbase.sendData(PATH + "/" + KEY + "/" + String(i), json, Mode::update);
-          Serial.printf("\n(alarm) sendData success!");
-          delay(50);
-        }
-      }
-      delay(100);
-    }
-  }
-  vTaskDelete(Task2);
 }

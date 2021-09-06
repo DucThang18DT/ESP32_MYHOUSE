@@ -31,29 +31,25 @@ void splitString(std::vector<String> *listKeys,String str = "", char symbol = '/
   }
 }
 
-// void streamCallback(StreamData data){
-//   Serial.printf("\nstream path: %s\nevent path: %s\ndata type: %s\nevent type: %s\n\n",
-//                 data.streamPath().c_str(),
-//                 data.dataPath().c_str(),
-//                 data.dataType().c_str(),
-//                 data.eventType().c_str());
-//     Serial.println();
-//     String path = data.dataPath();
-//     if (path == "/length") buildListDevices(&listDevices);
-//     else if (path.length()>1){
-//       std::vector<String> listKeys;
-//       splitString(&listKeys, path, '/');
-//       int positionOfDevice = listKeys.at(1).toInt();
+void streamCallback(StreamData data){
+  Serial.printf("\nstream path: %s\nevent path: %s\ndata type: %s\nevent type: %s\n\n",
+                data.streamPath().c_str(),
+                data.dataPath().c_str(),
+                data.dataType().c_str(),
+                data.eventType().c_str());
+    Serial.println();
+    String path = data.dataPath();
+    if (path == "/length") buildListDevices(&listDevices);
+    else if (path.length()>1){
+      std::vector<String> listKeys;
+      splitString(&listKeys, path, '/');
+      int positionOfDevice = listKeys.at(1).toInt();
 
-//       String dataRcv = fbDatatbase.getData(PATH + "/" + listKeys.at(0) + "/" + listKeys.at(1));
+      String dataRcv = fbDatatbase.getData(PATH + "/" + listKeys.at(0) + "/" + listKeys.at(1));
       
-//       Serial.printf("\n(streamcallback) Data Received: \n");
-//       Serial.println(dataRcv);
-//       Serial.printf("(streamcallback) list size: %d", listDevices.size());
-//       DeviceItem::updateObject(listDevices, positionOfDevice, dataRcv);
-//       // TODO
-//     }
-// }
+      DeviceItem::updateObject(&listDevices, positionOfDevice, dataRcv);
+    }
+}
 
 void streamTimeOutCallback(bool timeOut){
   Serial.println("timeOut founction");
@@ -65,3 +61,4 @@ void streamTimeOutCallback(bool timeOut){
 //     Firebase.beginStream(*_fbStreamData, path);
 //     Firebase.setStreamCallback(*_fbStreamData, streamCallback, streamTimeOutCallback);
 // }
+

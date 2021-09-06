@@ -63,3 +63,20 @@ void FBRtDatabase::sendData(String path = "/", String jsonString = "", Mode mode
         break;
     }
 }
+
+void FBRtDatabase::sendData(String path = "/", int num = 0, Mode mode = Mode::set){
+    switch (mode)
+    {
+    case Mode::set:
+        Firebase.setInt(_firebaseData, path, num);
+        Serial.println("\nset Data success!");
+        break;
+    case Mode::push:
+        Firebase.push(_firebaseData, path, num);
+        Serial.println("\npush Data success!");
+    case Mode::update:
+        Firebase.updateNode(_firebaseData, path, num);
+        Serial.println("\nupdate Data success!");
+        break;
+    }
+}
