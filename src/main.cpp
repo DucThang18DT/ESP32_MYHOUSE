@@ -1,11 +1,6 @@
 // #define ARDUINOJSON_ENABLE_COMMENTS 1
 // #include <WiFiClient.h>
-#include <DeviceItem.h>
-#include <FBRtDatabase.h>
-#include <fbInter/FBRtInteraction.h>
-#include <myWifi/myWifi.h>
-#include <digitalClock/DigitalClock.h>
-#include <sensors/tempAndHumSensor/TempAndHumSensor.h>
+
 #include <myTask/myTask.h>
 
 unsigned long referenceTime;
@@ -26,7 +21,7 @@ void setup() {
   Firebase.setStreamCallback(fbStreamData, streamCallback, streamTimeOutCallback);
   Serial.println("(main) set Stream callback: OK");
 
-  referenceTime = millis();
+  referenceTime = referenceTime2 = referenceTime3 = millis();
 
   xTaskCreatePinnedToCore(
     alarm,
@@ -36,6 +31,15 @@ void setup() {
     0,           /* priority of the task */
     &Task2,      /* Task handle to keep track of created task */
     0);
+
+  xTaskCreatePinnedToCore(
+    dhtData,
+    "DHT Data",
+    5000,       /* Stack size of task */
+    NULL,        /* parameter of the task */
+    0,           /* priority of the task */
+    &Task3,      /* Task handle to keep track of created task */
+    1);
 
   Serial.printf("\nRunning on core: ");
   Serial.println(xPortGetCoreID());

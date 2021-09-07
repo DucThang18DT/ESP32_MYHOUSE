@@ -1,9 +1,10 @@
 #include "TempAndHum.h"
 
 String _today(){
+    DigitalClock clock = DigitalClock();
     String date ="", month = "";
-    date += DigitalClock::getDate() <10 ? "0" + String(DigitalClock::getDate()): String(DigitalClock::getDate());
-    month += DigitalClock::getMonth() <10 ? "0" + String(DigitalClock::getMonth()): String(DigitalClock::getMonth());
+    date += clock.getDate() <10 ? "0" + String(clock.getDate()): String(clock.getDate());
+    month += clock.getMonth() <10 ? "0" + String(clock.getMonth()): String(clock.getMonth());
     return date + "-" + month;
 }
 

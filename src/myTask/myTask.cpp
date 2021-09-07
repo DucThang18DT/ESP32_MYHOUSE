@@ -30,6 +30,13 @@ void dhtData(void * parameters){
     referenceTime3 = millis();
 
     for (;;){
-        // TODO
+        DigitalClock _clock = DigitalClock();
+        if ((_clock.getMinutes() == 0) && (abs(millis() - referenceTime3) > 3e4)){
+          referenceTime3 = millis(); 
+          
+          delay(50);
+        }
+        delay(100);
     }
+    vTaskDelete(Task3);
 }

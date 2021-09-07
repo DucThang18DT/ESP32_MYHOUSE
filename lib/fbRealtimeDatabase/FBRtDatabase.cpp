@@ -72,10 +72,10 @@ void FBRtDatabase::sendData(String path = "/", int num = 0, Mode mode = Mode::se
         Serial.println("\nset Data success!");
         break;
     case Mode::push:
-        Firebase.push(_firebaseData, path, num);
+        Firebase.pushInt(_firebaseData, path, num);
         Serial.println("\npush Data success!");
     case Mode::update:
-        Firebase.updateNode(_firebaseData, path, num);
+        Firebase.setInt(_firebaseData, path, num);
         Serial.println("\nupdate Data success!");
         break;
     }

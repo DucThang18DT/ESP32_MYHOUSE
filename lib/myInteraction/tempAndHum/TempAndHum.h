@@ -12,7 +12,7 @@
     static String HUMKEY = "/humidities";
 
     static TempAndHumSensor dhtSensor = TempAndHumSensor(DHTPIN, DHTType::DHT11);
-    static FBRtDatabase dhtDatabase = FBRtDatabase(HOST, AUTH, PATH, KEY);
+    static FBRtDatabase dhtDatabase = FBRtDatabase(HOST, AUTH, "/", "");
 
     // return date: "dd-mm"
     String _today();

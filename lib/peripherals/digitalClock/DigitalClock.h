@@ -26,15 +26,15 @@
         void display(int, int);
         void showTimeNow();
         void showDate();
-        static String timeNow();
+        String timeNow();
 
         // getter
-        static int getHours();
-        static int getMinutes();
-        static int getSeconds();
-        static int getDate();
-        static int getMonth();
-        static int getYear();
+        int getHours();
+        int getMinutes();
+        int getSeconds();
+        int getDate();
+        int getMonth();
+        int getYear();
 
         DigitalClock();
         ~DigitalClock(){}
