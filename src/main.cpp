@@ -21,7 +21,7 @@ void setup() {
   Firebase.setStreamCallback(fbStreamData, streamCallback, streamTimeOutCallback);
   Serial.println("(main) set Stream callback: OK");
 
-  referenceTime = referenceTime2 = referenceTime3 = millis();
+  referenceTime = millis();
 
   xTaskCreatePinnedToCore(
     alarm,
@@ -39,6 +39,15 @@ void setup() {
     NULL,        /* parameter of the task */
     0,           /* priority of the task */
     &Task3,      /* Task handle to keep track of created task */
+    1);
+  
+  xTaskCreatePinnedToCore(
+    wifiData,
+    "Wifi Data",
+    5000,       /* Stack size of task */
+    NULL,        /* parameter of the task */
+    0,           /* priority of the task */
+    &Task4,      /* Task handle to keep track of created task */
     1);
 
   Serial.printf("\nRunning on core: ");
